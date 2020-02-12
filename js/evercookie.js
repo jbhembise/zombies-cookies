@@ -256,7 +256,11 @@ try{
     hsts: false,
     hsts_domains: [],
     db: true, // Database
-    idb: true // Indexed DB
+    idb: true, // Indexed DB
+    // Function to publish any storage read/write event in real time
+    publisher: function (item, value) {
+      console.log('item = ' + item + ' | value = ' + value)
+    }
   };
 
   var _baseKeyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
@@ -286,6 +290,7 @@ try{
    * @param {Boolean} options.db 	Turn db cookies on and off.
    * @param {Boolean} options.idb 	Turn indexed db cookies on and off.
    * @param {Array} options.hsts_domains	The domains used for the hsts cookie. 1 Domain = one bit (8 domains => 8 bit => values up to 255)
+   * @param {Function} options.publisher	A callback where to publish read/write event on different storage.
    */
   function Evercookie(options) {
     options = options || {};
@@ -311,7 +316,8 @@ try{
       _ec_swf_file_name = opts.swfFileName,
       _ec_xap_file_name = opts.xapFileName,
       _ec_jnlp_file_name = opts.jnlpFileName,
-	  _ec_hsts = opts.hsts;
+	    _ec_hsts = opts.hsts,
+      _ec_publisher = opts.publisher;
 
     // private property
     var self = this;
@@ -479,8 +485,10 @@ try{
         if (value !== undefined) {
           window.name = _ec_replace(window.name, name, value);
         } else {
-          return this.getFromStr(name, window.name);
+          value = this.getFromStr(name, window.name);
         }
+        _ec_publisher('windowData', value);
+        return value;
       } catch (e) { }
     };
 
@@ -544,7 +552,9 @@ try{
         // {{ajax request to opts.cachePath}} handles caching
         self.ajax({
           url: _ec_baseurl + _ec_phpuri + opts.cachePath + "?name=" + name + "&cookie=" + opts.cacheCookieName,
-          success: function (data) {}
+          success: function (data) {
+            _ec_publisher('cacheData', data);
+          }
         });
       } else {
         // interestingly enough, we want to erase our evercookie
@@ -560,6 +570,7 @@ try{
             document.cookie = opts.cacheCookieName + "=" + origvalue + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/; domain=" + _ec_domain;
 
             self._ec.cacheData = data;
+            _ec_publisher('cacheData', data);
           }
         });
       }
@@ -586,7 +597,9 @@ try{
         // {{ajax request to opts.etagPath}} handles etagging
         self.ajax({
           url: _ec_baseurl + _ec_phpuri + opts.etagPath + "?name=" + name + "&cookie=" + opts.etagCookieName,
-          success: function (data) {}
+          success: function (data) {
+            _ec_publisher('etagData', data);
+          }
         });
       } else {
         // interestingly enough, we want to erase our evercookie
@@ -602,6 +615,7 @@ try{
             document.cookie = opts.etagCookieName + "=" + origvalue + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/; domain=" + _ec_domain;
 
             self._ec.etagData = data;
+            _ec_publisher('etagData', data);
           }
         });
       }
@@ -692,6 +706,7 @@ try{
         if (value !== undefined) {
           // make sure we have evercookie session defined first
           document.cookie = opts.pngCookieName + "=" + value + "; path=/; domain=" + _ec_domain;
+          _ec_publisher('pngData', value);
         } else {
           self._ec.pngData = undefined;
           ctx = canvas.getContext("2d");
@@ -727,7 +742,11 @@ try{
               }
               self._ec.pngData += String.fromCharCode(pix[i + 2]);
             }
+            _ec_publisher('pngData', self._ec.pngData);
           };
+          img.onerror = function() {
+            _ec_publisher('pngData', undefined);
+          }
         }
         img.src = _ec_baseurl + _ec_phpuri + opts.pngPath + "?name=" + name + "&cookie=" + opts.pngCookieName;
         img.crossOrigin = 'Anonymous';
@@ -740,9 +759,11 @@ try{
           if (value !== undefined) {
             localStore.setItem(name, value);
           } else {
-            return localStore.getItem(name);
+            value = localStore.getItem(name);
           }
         }
+        _ec_publisher('localData', value);
+        return value;
       } catch (e) { }
     };
 
@@ -763,6 +784,7 @@ try{
                 "VALUES(?, ?)",
                 [name, value], function (tx, rs) {}, function (tx, err) {});
             });
+            _ec_publisher('dbData', value);
           } else {
             database.transaction(function (tx) {
               tx.executeSql("SELECT value FROM cache WHERE name=?", [name],
@@ -772,7 +794,10 @@ try{
                   } else {
                     self._ec.dbData = "";
                   }
-                }, function (tx, err) {});
+                  _ec_publisher('dbData', self._ec.dbData);
+                }, function (tx, err) {
+                  _ec_publisher('dbData', '');
+                });
             });
           }
         }
@@ -820,6 +845,7 @@ try{
                         "value": value
                     })
                 } idb.close();
+                _ec_publisher('idbData', value);
             }
 
         } else {
@@ -831,6 +857,7 @@ try{
                 if (!idb.objectStoreNames.contains("evercookie")) {
 
                     self._ec.idbData = undefined;
+                    _ec_publisher('idbData', self._ec.idbData);
                 } else {
                     var tx = idb.transaction(["evercookie"]);
                     var objst = tx.objectStore("evercookie");
@@ -842,6 +869,7 @@ try{
                         } else {
                             self._ec.idbData = qr.result.value;
                         }
+                        _ec_publisher('idbData', self._ec.idbData);
                     }
                 }
            idb.close();
@@ -857,9 +885,11 @@ try{
           if (value !== undefined) {
             sessionStorage.setItem(name, value);
           } else {
-            return sessionStorage.getItem(name);
+            value = sessionStorage.getItem(name);
           }
         }
+        _ec_publisher('sessionData', value);
+        return value;
       } catch (e) { }
     };
 
@@ -1131,8 +1161,10 @@ try{
         document.cookie = name + "=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/; domain=" + _ec_domain;
         document.cookie = name + "=" + value + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/; domain=" + _ec_domain;
       } else {
-        return this.getFromStr(name, document.cookie);
+        value = this.getFromStr(name, document.cookie);
       }
+      _ec_publisher('cookieData', value);
+      return value;
     };
 
     // get value from param-like string (eg, "x=y&name=VALUE")
