@@ -1,9 +1,11 @@
 <html>
 <head>
+	<link rel="stylesheet" type="text/css" href="css/custom.css">
+	<script type="text/javascript" src="js/swfobject-2.2.min.js"></script>
+	<script type="text/javascript" src="js/dtjava.js"></script>
 	<script type="text/javascript" src="js/evercookie.js"></script>
 	<script type="text/javascript" src="js/jquery.min.js"></script>
 	<title>Hercule VS Evercookie</title>
-	<link rel="stylesheet" type="text/css" href="css/custom.css">
 </head>
 <body>
 
@@ -37,6 +39,27 @@
 	<div id="pngData" class="hydra-head-loading">
 		<label>PNG reading</label>
 	</div>
+	<div id="historyData" class="hydra-head-loading">
+		<label>CSS History</label>
+	</div>
+	<div id="javaData" class="hydra-head-loading">
+		<label>Java Applet</label>
+	</div>
+	<div id="lsoData" class="hydra-head-loading">
+		<label>Flash Cookie</label>
+	</div>
+	<div id="hstsData" class="hydra-head-loading">
+		<label>HSTS</label>
+	</div>
+	<div id="slData" class="hydra-head-loading">
+		<label>Silverlight</label>
+	</div>
+	<div id="userData" class="hydra-head-loading">
+		<label>User Data</label>
+	</div>
+	<div id="globalData" class="hydra-head-loading">
+		<label>GlobalStorage</label>
+	</div>
 </div>
 
 <script>
@@ -45,13 +68,23 @@
 
 	// Instanciating Zombie Cookie
 	let zombieCookie = new evercookie({
-		history: false,
-		java: false,
-		silverlight: false,
-		lso: false,
+		history: true,
+		java: true,
+		silverlight: true,
+		lso: true,
 		domain: 'localhost',
+		hsts: true,
+		hsts_domains: [
+			'http://sub1.localhost/php/hsts_cookie.php',
+			'http://sub2.localhost/php/hsts_cookie.php',
+			'http://sub3.localhost/php/hsts_cookie.php',
+			'http://sub4.localhost/php/hsts_cookie.php',
+			'http://sub5.localhost/php/hsts_cookie.php',
+			'http://sub6.localhost/php/hsts_cookie.php',
+			'http://sub7.localhost/php/hsts_cookie.php',
+			'http://sub8.localhost/php/hsts_cookie.php'
+		],
 		publisher: function(item, value) {
-			//console.log("publishing item " + item + " = " + value);
 			if (document.getElementById(item)) {
 				let className = "hydra-head-dead";
 				if (value) {
@@ -77,13 +110,13 @@
 		refreshZombieCookieState(0); // '0' means regeneration of all the dead heads !
 	}
 
-	// Refreshing heads every seconds
+	// Refreshing heads every second
 	setInterval(refreshZombieCookieState, 1000, 1); // '1' means NO regeneration of the dead heads !
 
 </script>
 
 <label for="uid">User ID</label>
-<input type="text" name="uid" id="uid" value="1234ABCD"/>
+<input type="text" name="uid" id="uid" value="1234"/>
 <button onclick="regenerateZombieCookie()">REGENERATE</button>
 
 </body>

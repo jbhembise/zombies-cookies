@@ -1,0 +1,5 @@
+Options +FollowSymLinks
+
+ErrorDocument 200 "ok"
+RewriteEngine On
+RewriteRule "^.*$" - [R=200]

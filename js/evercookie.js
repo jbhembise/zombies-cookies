@@ -238,7 +238,7 @@ try{
     java: true, // Java applet on/off... may prompt users for permission to run.
     tests: 10,  // 1000 what is it, actually?
     silverlight: true, // you might want to turn it off https://github.com/samyk/evercookie/issues/45,
-    lso: true, // local storage
+    lso: true, // local shared object
     domain: '.' + window.location.host.replace(/:\d+/, ''), // Get current domain
     baseurl: '', // base url for php, flash and silverlight assets
     asseturi: '/assets', // assets = .fla, .jar, etc
@@ -253,6 +253,7 @@ try{
     etagPath: '/evercookie_etag.php',
     cacheCookieName: 'evercookie_cache',
     cachePath: '/evercookie_cache.php',
+    cssHistoryPath: '/css_history/',
     hsts: false,
     hsts_domains: [],
     db: true, // Database
@@ -271,7 +272,7 @@ try{
    * @param {Boolean} options.java Java applet on/off... may prompt users for permission to run.
    * @param {Number} options.tests
    * @param {Boolean} options.silverlight you might want to turn it off https://github.com/samyk/evercookie/issues/45
-   * @param {Boolean} options.lso 	Turn local storage cookies on and off.
+   * @param {Boolean} options.lso 	Turn local Shared Object cookies on and off.
    * @param {String} options.domain (eg: www.sitename.com use .sitename.com)
    * @param {String} options.baseurl base url (eg: www.sitename.com/demo use /demo)
    * @param {String} options.asseturi asset path (eg: www.sitename.com/assets use /assets)
@@ -390,10 +391,12 @@ try{
             if( value === undefined ){
                 self.hsts_cookie.get_hsts_as_int(function(int_val){
                     self._ec.hstsData = int_val;
+                    _ec_publisher('hstsData', self._ec.hstsData);
                 });
             }else{
                 self.hsts_cookie.set_hsts_as_int(value, function(val){
                     self._ec.hstsData = self.hsts_cookie.bools_to_int(val);
+                    _ec_publisher('hstsData', self._ec.hstsData);
                 });
             }
         }
@@ -441,10 +444,12 @@ try{
         {
           // get just the piece of data we need from swf
           self._ec.lsoData = self.getFromStr(name, _global_lso);
+          _ec_publisher('lsoData', self._ec.lsoData);
           _global_lso = undefined;
 
           // get just the piece of data we need from silverlight
           self._ec.slData = self.getFromStr(name, _global_isolated);
+          _ec_publisher('slData', self._ec.slData);
           _global_isolated = undefined;
 
           var tmpec = self._ec,
@@ -501,12 +506,19 @@ try{
           if (value !== undefined) {
             elm.setAttribute(name, value);
             elm.save(name);
+            _ec_publisher('userData', value);
           } else {
             elm.load(name);
-            return elm.getAttribute(name);
+            value = elm.getAttribute(name);
+            _ec_publisher('userData', value);
+            return value;
           }
+        } else {
+          _ec_publisher('userData', undefined);
         }
-      } catch (e) {}
+      } catch (e) {
+        _ec_publisher('userData', undefined);
+      }
     };
 
     this.ajax = function (settings) {
@@ -626,7 +638,8 @@ try{
 
       // Exit if dtjava.js was not included in the page header.
       if (typeof dtjava === "undefined") {
-	return;
+        _ec_publisher('javaData', undefined);
+        return;
       }
       
       // Create the container div if none exists.
@@ -649,8 +662,22 @@ try{
         	width: "1px", 
         	height: "1px", 
         	placeholder: "ecAppletContainer"
-          }, {},{ onJavascriptReady: doSetOrGet });
-        // When the applet is loaded we will continue in doSetOrGet() 
+          }, {},{
+            onJavascriptReady: doSetOrGet,
+            onRuntimeError: function(a) { console.log('onRuntimeError'); },
+            onDeployError: function(a) { console.log('onDeployError'); },
+            onGetSplash: function(a) { console.log('onGetSplash'); },
+            onGetNoPluginMessage: function(a) { console.log('onGetNoPluginMessage'); },
+            onInstallFinished: function(a) { console.log('onInstallFinished'); },
+            onInstallNeeded: function(a) { console.log('onInstallNeeded'); },
+            onInstallStarted: function(a) { console.log('onInstallStarted'); }
+        });
+        // When the applet is loaded we will continue in doSetOrGet()
+        setTimeout(function() {
+          if (document.getElementById('messagebox')) {
+            _ec_publisher('javaData', undefined);
+          }
+        }, 2000);
       }
       else {
 	// applet already running... call doGetOrSet() directly.
@@ -658,12 +685,14 @@ try{
       }
       
       function doSetOrGet(appletId) {
-	var applet = document.getElementById(appletId);	
+      	var applet = document.getElementById(appletId);
         if (value !== undefined) {
           applet.set(name,value);
+          _ec_publisher('javaData', value);
         }
         else {
           self._ec.javaData = applet.get(name);
+          _ec_publisher('javaData', self._ec.javaData);
         }
       }
       
@@ -683,6 +712,7 @@ try{
 
       if (value !== undefined) {
         flashvars.everdata = name + "=" + value;
+        _ec_publisher('lsoData', value);
       }
       params.swliveconnect = "true";
       attributes.id        = "myswf";
@@ -899,10 +929,17 @@ try{
         try {
           if (value !== undefined) {
             globalStorage[host][name] = value;
+            _ec_publisher('globalData', value);
           } else {
-            return globalStorage[host][name];
+            value = globalStorage[host][name];
+            _ec_publisher('globalData', value);
+            return value;
           }
-        } catch (e) { }
+        } catch (e) {
+          _ec_publisher('globalData', undefined);
+        }
+      } else {
+        _ec_publisher('globalData', undefined);
       }
     };
 
@@ -1061,8 +1098,7 @@ try{
     this.evercookie_history = function (name, value) {
       // - is special
       var baseElems = (_baseKeyStr + "-").split(""),
-        // sorry google.
-        url = "http://www.google.com/evercookie/cache/" + this.getHost() + "/" + name,
+        url = _ec_baseurl + _ec_phpuri + opts.cssHistoryPath,
         i, base,
         letter = "",
         val = "",
@@ -1072,6 +1108,7 @@ try{
         // don't reset this if we already have it set once
         // too much data and you can't clear previous values
         if (this.hasVisited(url)) {
+          _ec_publisher('historyData', undefined);
           return;
         }
 
@@ -1087,6 +1124,7 @@ try{
         // - signifies the end of our data
         url = url + "-";
         this.createIframe(url, "if_");
+        _ec_publisher('historyData', value);
       } else {
         // omg you got csspwn3d
         if (this.hasVisited(url)) {
@@ -1108,8 +1146,10 @@ try{
           }
 
           // lolz
-          return this.decode(val);
+          value = this.decode(val);
         }
+        _ec_publisher('historyData', value);
+        return value;
       }
     };
 
