@@ -326,7 +326,7 @@ try{
     if (_ec_hsts){
         if(opts.hsts_domains.length <= 8){
             // TODO: warn on some more prominent place ?
-            console.log('HSTS cookie with '+opts.hsts_domains.length+' can only save values up to ' + Math.pow(2, opts.hsts_domains.length) - 1);
+            console.log('HSTS cookie with '+ opts.hsts_domains.length +' can only save values up to ' + (Math.pow(2, opts.hsts_domains.length) - 1));
         }
         this.hsts_cookie = HSTS_Cookie(opts.hsts_domains);
     }
