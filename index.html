@@ -9,55 +9,162 @@
 </head>
 <body>
 
-<h2>uid = <span id="idtag" style="color: red">currently not set</span></h2>
+<fieldset>
+	<legend>Control panel</legend>
+	<div>
+		<label for="uid">User ID</label>
+		<input type="text" name="uid" id="uid" value="123"/>
+		<button onclick="generateZombieCookie()">GENERATE</button>
+		<button onclick="regenerateZombieCookie()">REGENERATE</button>
+	</div>
+	<div>
+		<form method="get">
+			<div>
+				<p><strong>Working storages</strong></p>
+				<div class="toggle">
+					<input type="checkbox" id="cookieToggle" name="cookie" value="true"/>
+					<label for="cookieToggle">HTTP Cookie</label>
+				</div>
+				<div class="toggle">
+					<input type="checkbox" id="localToggle" name="local" value="true"/>
+					<label for="localToggle">LocalStorage</label>
+				</div>
+				<div class="toggle">
+					<input type="checkbox" id="sessionToggle" name="session" value="true"/>
+					<label for="sessionToggle">SessionStorage</label>
+				</div>
+				<div class="toggle">
+					<input type="checkbox" id="windowToggle" name="window" value="true"/>
+					<label for="windowToggle">Window name</label>
+				</div>
+				<div class="toggle">
+					<input type="checkbox" id="dbToggle" name="db" value="true"/>
+					<label for="dbToggle">Web SQL DB</label>
+				</div>
+				<div class="toggle">
+					<input type="checkbox" id="idbToggle" name="idb" value="true"/>
+					<label for="idbToggle">Indexed DB</label>
+				</div>
+				<div class="toggle">
+					<input type="checkbox" id="cacheToggle" name="cache" value="true"/>
+					<label for="cacheToggle">Web Cache</label>
+				</div>
+
+				<div class="toggle">
+					<input type="checkbox" id="etagToggle" name="etag" value="true"/>
+					<label for="etagToggle">Etags</label>
+				</div>
+				<div class="toggle">
+					<input type="checkbox" id="pngToggle" name="png" value="true"/>
+					<label for="pngToggle">PNG reading</label>
+				</div>
+        <div class="toggle">
+					<input type="checkbox" id="hstsToggle" name="hsts" value="true"/>
+					<label for="hstsToggle">HSTS</label>
+				</div>
+			</div>
+
+			<div>
+				<p><strong>Deprecated or scope limited storages</strong></p>
+				<div class="toggle">
+					<input type="checkbox" id="globalToggle" name="global" value="true"/>
+					<label for="globalToggle">GlobalStorage</label>
+				</div>
+				<div class="toggle">
+					<input type="checkbox" id="userToggle" name="user" value="true"/>
+					<label for="userToggle">User Data</label>
+				</div>
+				<div class="toggle">
+					<input type="checkbox" id="javaToggle" name="java" value="true"/>
+					<label for="javaToggle">Java Applet</label>
+				</div>
+				<div class="toggle">
+					<input type="checkbox" id="lsoToggle" name="lso" value="true"/>
+					<label for="lsoToggle">Flash Cookie</label>
+				</div>
+				<div class="toggle">
+					<input type="checkbox" id="slToggle" name="sl" value="true"/>
+					<label for="slToggle">Silverlight</label>
+				</div>
+				<div class="toggle">
+					<input type="checkbox" id="historyToggle" name="history" value="true"/>
+					<label for="historyToggle">CSS History</label>
+				</div>
+			</div>
+
+			<div>
+				<p>The battle will soon begin ...</p>
+				<input type="submit" value="FIGHT!"/>
+			</div>
+		</form>
+	</div>
+</fieldset>
+
+<h2>uid = <span id="idtag" style="color: red">loading ...</span></h2>
 
 <div id="hydra-heads">
 	<div id="localData" class="hydra-head-loading">
+		<span id="localDataValue">???</span>
 		<label>LocalStorage</label>
 	</div>
 	<div id="sessionData" class="hydra-head-loading">
+		<span id="sessionDataValue">???</span>
 		<label>SessionStorage</label>
 	</div>
 	<div id="windowData" class="hydra-head-loading">
+		<span id="windowDataValue">???</span>
 		<label>Window name</label>
 	</div>
 	<div id="dbData" class="hydra-head-loading">
+		<span id="dbDataValue">???</span>
 		<label>Web SQL DB</label>
 	</div>
 	<div id="idbData" class="hydra-head-loading">
+		<span id="idbDataValue">???</span>
 		<label>Indexed DB</label>
 	</div>
 	<div id="cookieData" class="hydra-head-loading">
+		<span id="cookieDataValue">???</span>
 		<label>HTTP Cookie</label>
 	</div>
 	<div id="cacheData" class="hydra-head-loading">
+		<span id="cacheDataValue">???</span>
 		<label>Web Cache</label>
 	</div>
 	<div id="etagData" class="hydra-head-loading">
+		<span id="etagDataValue">???</span>
 		<label>Etags</label>
 	</div>
 	<div id="pngData" class="hydra-head-loading">
+		<span id="pngDataValue">???</span>
 		<label>PNG reading</label>
 	</div>
 	<div id="historyData" class="hydra-head-loading">
+		<span id="historyDataValue">???</span>
 		<label>CSS History</label>
 	</div>
 	<div id="javaData" class="hydra-head-loading">
+		<span id="javaDataValue">???</span>
 		<label>Java Applet</label>
 	</div>
 	<div id="lsoData" class="hydra-head-loading">
+		<span id="lsoDataValue">???</span>
 		<label>Flash Cookie</label>
 	</div>
 	<div id="hstsData" class="hydra-head-loading">
+		<span id="hstsDataValue">???</span>
 		<label>HSTS</label>
 	</div>
 	<div id="slData" class="hydra-head-loading">
+		<span id="slDataValue">???</span>
 		<label>Silverlight</label>
 	</div>
 	<div id="userData" class="hydra-head-loading">
+		<span id="userDataValue">???</span>
 		<label>User Data</label>
 	</div>
 	<div id="globalData" class="hydra-head-loading">
+		<span id="globalDataValue">???</span>
 		<label>GlobalStorage</label>
 	</div>
 </div>
@@ -66,14 +173,61 @@
 	// Name of my tracking field
 	let zombieCookieName = 'uid';
 
-	// Instanciating Zombie Cookie
+	// Interval pointer for zombie cookie autorefresh
+	let refreshInterval;
+
+	// Get head configuration from URL
+	const urlParams = new URLSearchParams(window.location.search);
+	function toggleValueFromUrl(toggleName) {
+		return !!urlParams.get(toggleName);
+	}
+
+  const toggleNames = [
+		'cookie',
+		'session',
+		'local',
+		'global',
+		'window',
+		'user',
+		'db',
+		'idb',
+		'png',
+		'etag',
+		'cache',
+		'history',
+		'java',
+		'lso',
+		'hsts',
+		'sl'
+	];
+  for(const toggleName of toggleNames) {
+		const toggleValue = toggleValueFromUrl(toggleName);
+		if (!toggleValue) {
+			document.getElementById(toggleName + 'Data').className = 'hydra-head-hidden';
+		} else {
+			document.getElementById(toggleName + 'Toggle').checked = true;
+		}
+	}
+
+  // Instanciating Zombie Cookie
 	let zombieCookie = new evercookie({
-		history: true,
-		java: true,
-		silverlight: true,
-		lso: true,
 		domain: 'localhost',
-		hsts: true,
+		tests: 1,
+		cookie: toggleValueFromUrl('cookie'),
+		localStorage: toggleValueFromUrl('local'),
+		sessionStorage: toggleValueFromUrl('session'),
+		globalStorage: toggleValueFromUrl('global'),
+		userData: toggleValueFromUrl('user'),
+		windowName: toggleValueFromUrl('window'),
+		db: toggleValueFromUrl('db'),
+		idb: toggleValueFromUrl('idb'),
+		png: toggleValueFromUrl('png'),
+		etag: toggleValueFromUrl('etag'),
+		cache: toggleValueFromUrl('cache'),
+		history: toggleValueFromUrl('history'),
+		java: toggleValueFromUrl('java'),
+		lso: toggleValueFromUrl('lso'),
+		hsts: toggleValueFromUrl('hsts'),
 		hsts_domains: [
 			'http://sub1.localhost/php/hsts_cookie.php',
 			'http://sub2.localhost/php/hsts_cookie.php',
@@ -84,15 +238,19 @@
 			'http://sub7.localhost/php/hsts_cookie.php',
 			'http://sub8.localhost/php/hsts_cookie.php'
 		],
+		silverlight: toggleValueFromUrl('sl'),
 		publisher: function(item, value) {
-			if (document.getElementById(item)) {
+			//console.log('item = ' + item + '; value = ' + value);
+			if (document.getElementById(item) && document.getElementById(item + 'Value')) {
 				let className = "hydra-head-dead";
 				if (value) {
 					className = "hydra-head-alive";
 				}
-				if (document.getElementById(item).className !== className) {
+				if (document.getElementById(item).className !== 'hydra-head-hidden'
+						&& document.getElementById(item).className !== className) {
 					document.getElementById(item).className = className;
 				}
+				document.getElementById(item + 'Value').innerHTML = value ? value : '???';
 			}
 		}
 	});
@@ -100,24 +258,35 @@
 	// Refreshing Zombie Cookie head state
 	function refreshZombieCookieState(dont_reset) {
 		zombieCookie.get(zombieCookieName, function(best, all) {
-			document.getElementById("idtag").innerHTML = best;
+			document.getElementById("idtag").innerHTML = best ? best  : 'not set';
 		}, dont_reset);
+	}
+
+	// Generating Zombie Cookie with input value
+	function generateZombieCookie() {
+		clearInterval(refreshInterval);
+		// Wait for previous refresh to finish before regeneration
+		// (it could take 300ms)
+		setTimeout(function() { zombieCookie.set(zombieCookieName, document.getElementById('uid').value) }, 300);
+		autorefreshZombieCookie();
 	}
 
 	// Regenerating Zombie Cookie (all heads raising from the death)
 	function regenerateZombieCookie() {
-		zombieCookie.set(zombieCookieName, document.getElementById('uid').value);
-		refreshZombieCookieState(0); // '0' means regeneration of all the dead heads !
+		clearInterval(refreshInterval);
+		// Wait for previous refresh to finish before regeneration
+		// (it could take 300ms)
+		setTimeout(refreshZombieCookieState, 300, 0); // '0' means regeneration of all the dead heads !
+		autorefreshZombieCookie();
 	}
 
-	// Refreshing heads every second
-	setInterval(refreshZombieCookieState, 1000, 1); // '1' means NO regeneration of the dead heads !
+	// Refreshing heads every 300 milli seconds
+	function autorefreshZombieCookie() {
+		refreshInterval = setInterval(refreshZombieCookieState, 300, 1); // '1' means NO regeneration of the dead heads !
+	}
+	autorefreshZombieCookie();
 
 </script>
-
-<label for="uid">User ID</label>
-<input type="text" name="uid" id="uid" value="1234"/>
-<button onclick="regenerateZombieCookie()">REGENERATE</button>
 
 </body>
 </html>

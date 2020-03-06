@@ -234,6 +234,12 @@ try{
   
   
   var defaultOptionMap = {
+    cookie: true, // HTTP cookie on/off
+    localStorage: true, // Local storage on/off
+    sessionStorage: true, // Session storage on/off
+    globalStorage: true, // Global storage on/off
+    userData: true, // IE user Data on/off
+    windowName: true, // Window name on/off
     history: true, // CSS history knocking or not .. can be network intensive
     java: true, // Java applet on/off... may prompt users for permission to run.
     tests: 10,  // 1000 what is it, actually?
@@ -247,10 +253,13 @@ try{
     swfFileName: '/evercookie.swf',
     xapFileName: '/evercookie.xap',
     jnlpFileName: '/evercookie.jnlp',
+    png: true, // PNG pixel reading on/off
     pngCookieName: 'evercookie_png',
     pngPath: '/evercookie_png.php',
+    etag: true, // Etag on/off
     etagCookieName: 'evercookie_etag',
     etagPath: '/evercookie_etag.php',
+    cache: true, // Web cache on/off
     cacheCookieName: 'evercookie_cache',
     cachePath: '/evercookie_cache.php',
     cssHistoryPath: '/css_history/',
@@ -281,10 +290,13 @@ try{
    * @param {String} options.swfFileName
    * @param {String} options.xapFileName
    * @param {String} options.jnlpFileName
+   * @param {String} options.png  Turn PNG pixel reading on and off.
    * @param {String} options.pngCookieName
    * @param {String} options.pngPath
-   * @param {String} options.etagCookieName:
+   * @param {String} options.etag  Turn etags on and off.
+   * @param {String} options.etagCookieName
    * @param {String} options.etagPath
+   * @param {String} options.cache Turn Web cache on and off.
    * @param {String} options.cacheCookieName
    * @param {String} options.cachePath
    * @param {String} options.hsts	Turn hsts cookies on and off.
@@ -292,6 +304,12 @@ try{
    * @param {Boolean} options.idb 	Turn indexed db cookies on and off.
    * @param {Array} options.hsts_domains	The domains used for the hsts cookie. 1 Domain = one bit (8 domains => 8 bit => values up to 255)
    * @param {Function} options.publisher	A callback where to publish read/write event on different storage.
+   * @param {Boolean} options.userData 	Turn IE userData on and off.
+   * @param {Boolean} options.cookie 	Turn HTTP cookie on and off.
+   * @param {Boolean} options.localStorage 	Turn local storage on and off.
+   * @param {Boolean} options.globalStorage 	Turn global storage on and off.
+   * @param {Boolean} options.sessionStorage 	Turn session storage on and off.
+   * @param {Boolean} options.windowName 	Turn window.name on and off.
    */
   function Evercookie(options) {
     options = options || {};
@@ -354,13 +372,13 @@ try{
         if (opts.idb) {
           self.evercookie_indexdb_storage(name, value);
         }
-        if (opts.pngCookieName) {
+        if (opts.png && opts.pngCookieName) {
           self.evercookie_png(name, value);
         }
-        if (opts.etagCookieName) {
+        if (opts.etag && opts.etagCookieName) {
           self.evercookie_etag(name, value);
         }
-        if (opts.cacheCookieName) {
+        if (opts.cache && opts.cacheCookieName) {
           self.evercookie_cache(name, value);
         }
         if (opts.lso) {
@@ -375,13 +393,24 @@ try{
         if (opts.java && _ec_java) {
           self.evercookie_java(name, value);
         }
-        
-        self._ec.userData      = self.evercookie_userdata(name, value);
-        self._ec.cookieData    = self.evercookie_cookie(name, value);
-        self._ec.localData     = self.evercookie_local_storage(name, value);
-        self._ec.globalData    = self.evercookie_global_storage(name, value);
-        self._ec.sessionData   = self.evercookie_session_storage(name, value);
-        self._ec.windowData    = self.evercookie_window(name, value);
+        if (opts.userData) {
+          self._ec.userData = self.evercookie_userdata(name, value);
+        }
+        if (opts.cookie) {
+          self._ec.cookieData = self.evercookie_cookie(name, value);
+        }
+        if (opts.localStorage) {
+          self._ec.localData = self.evercookie_local_storage(name, value);
+        }
+        if (opts.globalStorage) {
+          self._ec.globalData = self.evercookie_global_storage(name, value);
+        }
+        if (opts.sessionStorage) {
+          self._ec.sessionData = self.evercookie_session_storage(name, value);
+        }
+        if (opts.windowName) {
+          self._ec.windowData = self.evercookie_window(name, value);
+        }
         
         if (_ec_history) {
           self._ec.historyData = self.evercookie_history(name, value);
@@ -442,15 +471,19 @@ try{
         // we hit our max wait time or got all our data
         else
         {
-          // get just the piece of data we need from swf
-          self._ec.lsoData = self.getFromStr(name, _global_lso);
-          _ec_publisher('lsoData', self._ec.lsoData);
-          _global_lso = undefined;
+          if (opts.lso) {
+            // get just the piece of data we need from swf
+            self._ec.lsoData = self.getFromStr(name, _global_lso);
+            _ec_publisher('lsoData', self._ec.lsoData);
+            _global_lso = undefined;
+          }
 
           // get just the piece of data we need from silverlight
-          self._ec.slData = self.getFromStr(name, _global_isolated);
-          _ec_publisher('slData', self._ec.slData);
-          _global_isolated = undefined;
+          if (opts.silverlight) {
+            self._ec.slData = self.getFromStr(name, _global_isolated);
+            _ec_publisher('slData', self._ec.slData);
+            _global_isolated = undefined;
+          }
 
           var tmpec = self._ec,
             candidates = [],

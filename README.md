@@ -3,8 +3,7 @@ Zombies Cookies
 
 Improvement of [Evercookie](https://github.com/samyk/evercookie) to explain his mecanisms in a fun way.
 
-Local usage
--------
+#Local usage
 
 To have the server UP, launch a PHP Docker image (here on port 8088) from the root folder of this project :
 
@@ -15,6 +14,8 @@ Then go to URL :
 http://localhost:8088/
 
 Have fun ;)
+
+## HSTS Pinning on localhost
 
 To make HSTS Pinning works on localhost, you must build a custom docker image
 
@@ -49,3 +50,9 @@ openssl req -x509 -out sub1.localhost.crt -keyout sub1.localhost.key \
   -subj '/CN=sub1.localhost' -extensions EXT -config <( \
    printf "[dn]\nCN=sub1.localhost\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:sub1.localhost\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth")
 ```
+
+# Notes
+
+## Deprecated storages
+
+- **Global Storage** was an old way to store data in Firefox (since version 9), before HTML5 introduced **localStorage**.

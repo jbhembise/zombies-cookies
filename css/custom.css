@@ -5,7 +5,7 @@ div.hydra-head-dead {
     text-align: center;
     margin: 20px;
     width: 100px;
-    height: 105px;
+    height: 120px;
     background-size: 100px 83px;
     background-repeat: no-repeat;
     background-position: bottom center;
@@ -17,6 +17,15 @@ div.hydra-head-dead label {
     font-weight: bold;
     text-align: center;
 }
+div.hydra-head-loading span,
+div.hydra-head-alive span,
+div.hydra-head-dead span {
+    color: red;
+    font-size: 16px;
+    text-align: center;
+    display: block;
+}
+
 div.hydra-head-loading {
     background-image: url('/img/hydra-loader.gif');
 }
@@ -26,6 +35,9 @@ div.hydra-head-alive {
 }
 div.hydra-head-dead {
     background-image: url('/img/hydra-dead.png');
+}
+div.hydra-head-hidden {
+    display: none;
 }
 @keyframes zoomin {
     0% {transform: scale(0.9);}
