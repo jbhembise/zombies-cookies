@@ -863,8 +863,12 @@ try{
                 });
             });
           }
+        } else {
+          _ec_publisher('dbData', '');
         }
-      } catch (e) { }
+      } catch (e) {
+        _ec_publisher('dbData', '');
+      }
     };
  
     this.evercookie_indexdb_storage = function(name, value) {
