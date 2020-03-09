@@ -10,15 +10,16 @@
 <body>
 
 <fieldset>
-	<legend>Control panel</legend>
-	<div>
-		<label for="uid">User ID</label>
-		<input type="text" name="uid" id="uid" value="123"/>
-		<button onclick="generateZombieCookie()">GENERATE</button>
-		<button onclick="regenerateZombieCookie()">REGENERATE</button>
-	</div>
+	<legend>Configuration</legend>
 	<div>
 		<form method="get">
+			<div>
+				<p><strong>Launch mode</strong></p>
+				<select name="mode">
+					<option value="refresh">Refresh (default)</option>
+					<option value="regenerate">Regenerate</option>
+				</select>
+			</div>
 			<div>
 				<p><strong>Working storages</strong></p>
 				<div class="toggle">
@@ -97,6 +98,16 @@
 				<input type="submit" value="FIGHT!"/>
 			</div>
 		</form>
+	</div>
+</fieldset>
+
+<fieldset>
+	<legend>Control panel</legend>
+	<div>
+		<label for="uid">User ID</label>
+		<input type="text" name="uid" id="uid" value="123"/>
+		<button onclick="generateZombieCookie()">GENERATE</button>
+		<button onclick="regenerateZombieCookie()">REGENERATE</button>
 	</div>
 </fieldset>
 
@@ -284,8 +295,14 @@
 	function autorefreshZombieCookie() {
 		refreshInterval = setInterval(refreshZombieCookieState, 300, 1); // '1' means NO regeneration of the dead heads !
 	}
-	autorefreshZombieCookie();
 
+	// First operation (depending on input mode)
+	if (urlParams.get('mode') === 'regenerate') {
+		regenerateZombieCookie();
+	} else {
+		// "Refresh" mode by default
+		autorefreshZombieCookie();
+	}
 </script>
 
 </body>
