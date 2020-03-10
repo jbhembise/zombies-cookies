@@ -4,43 +4,74 @@ div.hydra-head-dead {
     display: inline-block;
     text-align: center;
     margin: 20px;
-    width: 100px;
-    height: 120px;
-    background-size: 100px 83px;
-    background-repeat: no-repeat;
-    background-position: bottom center;
 }
-div.hydra-head-loading label,
-div.hydra-head-alive label,
-div.hydra-head-dead label {
+
+div.hydra-head-loading div.head-label,
+div.hydra-head-alive div.head-label,
+div.hydra-head-dead div.head-label {
     font-size: 16px;
     font-weight: bold;
     text-align: center;
 }
-div.hydra-head-loading span,
-div.hydra-head-alive span,
-div.hydra-head-dead span {
+
+div.hydra-head-loading div.head-value,
+div.hydra-head-alive div.head-value,
+div.hydra-head-dead div.head-value {
     color: red;
     font-size: 16px;
     text-align: center;
-    display: block;
 }
 
-div.hydra-head-loading {
+div.hydra-head-loading div.head-illustration,
+div.hydra-head-alive div.head-illustration,
+div.hydra-head-dead div.head-illustration {
+    width: 100px;
+    height: 80px;
+    background-size: 100px 83px;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+}
+
+div.hydra-head-loading div.head-illustration {
     background-image: url('/img/hydra-loader.gif');
 }
-div.hydra-head-alive {
+div.hydra-head-alive div.head-illustration {
     background-image: url('/img/hydra-red.png');
     animation: zoomin 1s ease-in;
 }
-div.hydra-head-dead {
+div.hydra-head-dead div.head-illustration {
     background-image: url('/img/hydra-dead.png');
 }
+
+div.glow div.head-background {
+    position: relative;
+    top: -60px;
+    left: 25px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    z-index: -999;
+    box-shadow:
+        0 0 20px 10px #fff,  /* inner white */
+        0 0 30px 10px #f0f, /* middle magenta */
+        0 0 50px 30px #f00; /* outer cyan */
+    animation: glow 1s ease-in;
+    opacity: 0;
+}
+
 div.hydra-head-hidden {
     display: none;
 }
+
 @keyframes zoomin {
     0% {transform: scale(0.9);}
     60% {transform: scale(1.1);}
     100% {transform: scale(1);}
+}
+@keyframes glow {
+    0% {transform: scale(0.1); opacity: 1; }
+    20% {transform: scale(1.0); opacity: 1; }
+    40% {transform: scale(0.1); opacity: 1; }
+    60% {transform: scale(1.0); opacity: 1; }
+    80% {transform: scale(0.1); opacity: 1; }
 }
